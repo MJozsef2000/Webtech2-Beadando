@@ -1,0 +1,57 @@
+[{
+  "_id": {
+    "$oid": "6409adf6d58359172df002c8"
+  },
+  "name": "admin",
+  "pass": "admin",
+  "gender": "ferfi",
+  "email": "valami@gmail.com",
+  "favnum": 12
+},{
+  "_id": {
+    "$oid": "64269cbf36371ac02831e557"
+  },
+  "name": "test1",
+  "pass": "test1",
+  "email": "xd@gmail.com",
+  "favnum": 20,
+  "gender": "no"
+},{
+  "_id": {
+    "$oid": "64269ccd36371ac02831e559"
+  },
+  "name": "test2",
+  "pass": "test2",
+  "email": "okay@gmail.com",
+  "favnum": 1,
+  "gender": "ferfi"
+},{
+  "_id": {
+    "$oid": "6447da94eea3928c832c08c2"
+  },
+  "name": "userXY",
+  "pass": "admin",
+  "gender": "ferfi",
+  "email": "calami",
+  "favnum": 1
+},{
+  "_id": {
+    "$oid": "644982e3b2aaf0ebda2aa6b4"
+  },
+  "name": "A",
+  "pass": "A",
+  "gender": "A",
+  "email": "A@A.com",
+  "favnum": 10,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "644a6151d1d3f57c4676e0b5"
+  },
+  "name": "poco",
+  "pass": "poco",
+  "gender": "férfi",
+  "email": "miliczkij@gmail.com",
+  "favnum": 20,
+  "__v": 0
+}]
