@@ -12,8 +12,10 @@ A hibák forrása többek között abból jöhet, hogy a YouTube lényegében ne
 valamint saját tapasztalat szerint nem jelenik meg semmmilyen reklám az oldalon, így ez szembe megy a modelljüknek.
 
 ## A projekt elindítása
-```
-
+Frontend és Backend egyaránt
+```npm
+npm i 
+npm run start
 ```
 
 ## Opciók
