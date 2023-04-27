@@ -19,4 +19,4 @@ npm run start
 ```
 
 ## Opciók
-A projek
+A projekt elindítása után a Bejelentkezés felület fogad minket, ahol Felhasználó és Jelszó megadásával léphetünk be. Ha nem hoztunk még létre saját felhasználót, 

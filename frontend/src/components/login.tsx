@@ -73,9 +73,6 @@ export default function Login() {
               Belépek
             </button>
           </div>
-          <p className="forgot-password text-right">
-            Elfelejtette a <a href="#">jelszavát?</a>
-          </p>
         </form>
       </div>
     </div>
