@@ -53,6 +53,7 @@ ponttal:
 A Router nem csak a navigációs menü megjelenítését teszi lehetővé, hanem magát a navigációt is ez a csomag végzi <Routes> tag-el, a következőképpen:
   
 ```js
+...
 <Routes>
   <Route
     path="/"
@@ -64,4 +65,20 @@ A Router nem csak a navigációs menü megjelenítését teszi lehetővé, hanem
   <Route path="/userpage" element={<UserPage />} />
   <Route path="/favourites" element={<UserFavoritesTable username={UserName}/>} />
 </Routes>
+...
+```
+
+A weboldal balfelső részében található DasAuto és a mellette található logo is ebben a fájlban valósul meg. A Volkswagen 
+ikont a react-icons csomag biztosította.
+
+```js
+...
+  
+import { SiVolkswagen } from 'react-icons/si';
+  
+...
+<Link className="navbar-brand" to={'/'}>
+  <SiVolkswagen /> DasAuto
+</Link>
+...
 ```
