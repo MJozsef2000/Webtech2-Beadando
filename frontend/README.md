@@ -33,7 +33,7 @@ A navigációs menü túlnyomó részét hasonló logika övezi, miszerint a fel
 </ul>
 ```
 
-A fenti példában láthatjuk, hogy ha a felhasználó még nem jelentkezett be, akkor a bejelentkezést biztosító menüpont rendelkezésre áll, ellentétben a Kedvencek menü
+A fenti példában láthatjuk, hogy ha a felhasználó még nem jelentkezett be, akkor a bejelentkezést biztosító menüpont rendelkezésre áll, ellentétben a "Kedvenceim" menü
 ponttal:
 
 ```js
@@ -48,4 +48,20 @@ ponttal:
 </li>
 ...
 </ul>
+```
+
+A Router nem csak a navigációs menü megjelenítését teszi lehetővé, hanem magát a navigációt is ez a csomag végzi <Routes> tag-el, a következőképpen:
+  
+```js
+  <Routes>
+          <Route
+            path="/"
+            element={isLoggedIn === "true" ? <HomePage /> : <Login />}
+          />
+          <Route path="/sign-in" element={<Login />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/log-out" element={<LogOut />} />
+          <Route path="/userpage" element={<UserPage />} />
+          <Route path="/favourites" element={<UserFavoritesTable username={UserName}/>} />
+        </Routes>
 ```
