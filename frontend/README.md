@@ -154,3 +154,5 @@ A regisztrációs felület egy fokkal bonyolultabb mechanizmus, bár a nehéz fe
       }).catch(err => err);
   }
 ```
+Miután a form felület begyűjtötte a felhasználó regisztrációs adatait, valamint verifikálta azokat (email cím tartalmaz-e @-ot, kötelező információk megadásra kerültek-e), a megadott információk elküldésre kerülnek a Backend felé egy POST kéréssel. A regisztráció háromféleképpen mehet: A regisztráció sikeres, ha minden információ helyes a Frontend és Backend oldalán is. A regisztráció sikertelen, ha a regisztrálni kívánt név már létezik az adatbázisban, vagy valamelyik információ helytelen.
+  
