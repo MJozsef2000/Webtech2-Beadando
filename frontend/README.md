@@ -53,15 +53,15 @@ ponttal:
 A Router nem csak a navigációs menü megjelenítését teszi lehetővé, hanem magát a navigációt is ez a csomag végzi <Routes> tag-el, a következőképpen:
   
 ```js
-  <Routes>
-          <Route
-            path="/"
-            element={isLoggedIn === "true" ? <HomePage /> : <Login />}
-          />
-          <Route path="/sign-in" element={<Login />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/log-out" element={<LogOut />} />
-          <Route path="/userpage" element={<UserPage />} />
-          <Route path="/favourites" element={<UserFavoritesTable username={UserName}/>} />
-        </Routes>
+<Routes>
+  <Route
+    path="/"
+    element={isLoggedIn === "true" ? <HomePage /> : <Login />}
+  />
+  <Route path="/sign-in" element={<Login />} />
+  <Route path="/sign-up" element={<SignUp />} />
+  <Route path="/log-out" element={<LogOut />} />
+  <Route path="/userpage" element={<UserPage />} />
+  <Route path="/favourites" element={<UserFavoritesTable username={UserName}/>} />
+</Routes>
 ```
