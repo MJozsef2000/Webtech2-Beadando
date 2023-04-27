@@ -73,9 +73,7 @@ ikont a react-icons csomag biztosította.
 
 ```js
 ...
-  
 import { SiVolkswagen } from 'react-icons/si';
-  
 ...
 <Link className="navbar-brand" to={'/'}>
   <SiVolkswagen /> DasAuto
