@@ -80,3 +80,39 @@ import { SiVolkswagen } from 'react-icons/si';
 </Link>
 ...
 ```
+
+## login.tsx
+A login.tsx fájl a bejelentkezés felületét valósítja meg. A bejelentkező felület egy 2 bemenetből álló form, amely kezelését a következő metódus 
+valósítja meg:
+  
+```js
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    console.log(username, password);
+    fetch("http://localhost:4000/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    })
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          window.localStorage.setItem("loggedIn", "true");
+          window.localStorage.setItem("username", username);
+          window.location.href = "./";
+        } else {
+          console.log('Valami hiba történt!');
+          window.alert('Helytelen felhasználó vagy jelszó!')
+        }
+      }
+      );
+  }
+```
+A metódus először is megakadájozza, hogy az oldal frissüljön a form beküldése után az e.preventDefault(); direktívával. Ezután a Backendnek küldünk egy POST 
+kérést, amelyben átadunk egy nevet és egy jelszót. Innentől kezdve a Backendnél valami történik a kapott információkkal: Vagy elfogadja őket miután sikeres autentikáció történt az adatbázissal, vagy eldobja a kapott információkat abban az esetben, ha a táblázat nem tertalmaz a kapott információknak megfelelő felhasználót. Bármilyen válasz is jön vissza, a metódus lekezeli azt.
+                                                  
