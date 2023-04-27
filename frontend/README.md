@@ -116,3 +116,41 @@ valósítja meg:
 A metódus először is megakadájozza, hogy az oldal frissüljön a form beküldése után az e.preventDefault(); direktívával. Ezután a Backendnek küldünk egy POST 
 kérést, amelyben átadunk egy nevet és egy jelszót. Innentől kezdve a Backendnél valami történik a kapott információkkal: Vagy elfogadja őket miután sikeres autentikáció történt az adatbázissal, vagy eldobja a kapott információkat abban az esetben, ha a táblázat nem tertalmaz a kapott információknak megfelelő felhasználót. Bármilyen válasz is jön vissza, a metódus lekezeli azt.
                                                   
+## signup.tsx
+A regisztrációs felület egy fokkal bonyolultabb mechanizmus, bár a nehéz feladatot itt is a Backend végzi. A felület 5 bemeneti mezőt tartalmaz, amelyből a felhasználó név, a jelszó és az email cím kötelező. A jelszó természetesen kitakarásra kerül. A fájl érdekes részét megint csak a Backend-el való kommunikáció rejti, amely a következőképpen történik:
+```js
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [favnum, setFavnum] = useState("");
+  const [gender, setGender] = useState("");
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Submitting form data...");
+    console.log(username, email, password, favnum, gender);
+    fetch("http://localhost:4000/register", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        favnum,
+        gender,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          console.log(res);
+          window.alert("Regisztráció sikeres!")
+        } else if(res.status == 400) {
+          window.alert("Már regisztráltak ezen a néven!")
+        } else {
+          window.alert("Helytelen információkat adott meg!")
+        }
+      }).catch(err => err);
+  }
+```
