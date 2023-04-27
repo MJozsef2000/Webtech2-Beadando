@@ -52,7 +52,7 @@ const UserFavoritesTable: React.FC<Props> = ({ username }) => {
             .catch(err => {
               console.error(err);
             });
-          }}>Remove</button>
+          }}>Törlés</button>
         </li>
       </div>
     </div>
