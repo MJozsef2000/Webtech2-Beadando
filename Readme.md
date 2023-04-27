@@ -1,5 +1,5 @@
 #Webtechnológiák 2 féléves beadandó feladat
-
+ 
 ##A feladat témája
 A weboldal azon elterjedt autós videókról szól, amelyek viccet csinálnak a reklámokban elhangzó szlogenekból.
 A weboldal lényege, hogy felhasználók tudjanak be és kijelentkezni, véletlenszerűen megtekinteni videókat a az adott felületen,
