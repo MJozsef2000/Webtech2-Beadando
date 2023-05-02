@@ -155,4 +155,20 @@ A regisztrációs felület egy fokkal bonyolultabb mechanizmus, bár a nehéz fe
   }
 ```
 Miután a form felület begyűjtötte a felhasználó regisztrációs adatait, valamint verifikálta azokat (email cím tartalmaz-e @-ot, kötelező információk megadásra kerültek-e), a megadott információk elküldésre kerülnek a Backend felé egy POST kéréssel. A regisztráció háromféleképpen mehet: A regisztráció sikeres, ha minden információ helyes a Frontend és Backend oldalán is. A regisztráció sikertelen, ha a regisztrálni kívánt név már létezik az adatbázisban, vagy valamelyik információ helytelen.
-  
+
+## logout.tsx
+
+Miután a felhasználó bejelentkezett, a navigációs felület megváltozik, és többek között tartalmazni fogja a "kijelentkezés" opciót. Ahhoz, hogy ez a funkció ténylegesen visszavigye a felhasználót a bejelentkező oldalra, végre kell hajtani pár változtatást; a loggedIn paraméter immáron false, valamint az oldal visszatér a kezdő felületre, ahol be kell jelentkeznie megint.
+```js
+export default function logout(){
+  window.localStorage.setItem("loggedIn","false");
+  window.location.href = "./";
+  console.log("Logged out!");
+  const isLoggedIn = window.localStorage.getItem("loggedIn");
+  console.log(isLoggedIn);
+  return(
+    <div>
+    </div>
+  );
+}
+```
