@@ -299,3 +299,19 @@ Az oldal megjelenítése lényegében csak a két gombból és a videó felület
     </div>
   );
 ```
+
+## favourites.tsx
+A favourites.tsx fájl felel a bizonyos felhasználók kedvenceinek kiiratására. Ahhoz, hogy megtudjuk mondani egy bizonyos felhasználó által kedvencek közé rakott videók linkjeit, le kell kérdeznünk azokat az adatbázisból. Az adatbázis a videóval kapcsolatos minden információt visszaadja nekünk, amihez csak egy felhsaználó nevet kell biztosítanunk. A kódban használt adatszerkezetek a következőek:
+```js
+interface Video {
+  _id: string;
+  link: string;
+  favby: string[];
+  vid: number;
+}
+
+interface Props {
+  username: string | null;
+}
+```
+
