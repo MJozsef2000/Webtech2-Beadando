@@ -212,3 +212,132 @@ module.exports = function (app) {
   });
 }
 ```
+## videoRequests.js
+A felhasználó belépése után videókat tekinthet meg a Frontendben, ezeket a videókat a videoRequests.js továbbítja az adatbázisból, YouTube linkek formájában. Az első metódus amit implementáltam az az összes videó lekérdezése az adatbázisból, amely egy /videos kérésre válaszol tömbbe foglalt videó adatokkal. Ha sikeres a lekérdezés, a videók térnek vissza a Backendből, 404 ha nem találhatóak videók, valamint 500 ha egyéb hiba történt.
+```js
+module.exports = function (app) {
+  app.get('/videos', function (req, res) {
+    Video.find()
+      .then(videos => {
+        if (!videos) {
+          return res.status(404).send('Video(s) not found');
+        }
+        res.send(videos);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Error retrieving videos from database');
+      });
+  });
+  ...
+}
+```
+A Frontend természetesen nem kérdez le minden videót egyből, így egy célzottabb lekérdezést kell megvalósítani. A videók rendelkeznek egy úgynevezett Videó ID-val (vagy vid-el) amelyek alapján egy videó egyértelműen beazonosítható. Ha a Frontend megad egy helyes video ID-t, a Backend válszolni tud vele egy specifikus videóval:
+```js
+module.exports = function (app) {
+  ...
+  app.get('/videos/:vid', function (req, res) {
+    Video.findOne({ vid: req.params.vid })
+      .then(video => {
+        if (!video) {
+          return res.status(404).send('Video not found');
+        }
+        res.status(200).send(video.link);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Error retrieving video from database');
+      });
+  });
+  ...
+}
+```
+A videókat a felhasználók hozzáadhatják kedvenceikhez. Ehhez két adatot kell biztosítani a Backendhez: a felhasználó nevét és a kedvencekhez adandó videó ID-ját. Mivel a videókhoz kapcsolódó felhasználók egy tömbben tartózkodnak, így a MongoDB $addToSet direktíváját kell segítségül hívnunk:
+```js
+module.exports = function (app) {
+  ...
+  app.post('/videos/:vid/:name', (req, res) => {
+    const vid = req.params.vid;
+    const name = req.params.name;
+    // Meg kell bizonyosodnunk arról, hogy a felhasználó még nem adta a kedvencek közé a videót
+    Video.findOne({vid: vid, favby: {$in: [name]}})
+      .then(result => {
+        if (result) {
+          res.status(400).send('User already added this video to favourites');
+        } else {
+          // Ha a videó még nincs az adott felhasználó kedvencei között, kerüljön hozzáadásra
+          Video.updateOne({vid: vid}, {$addToSet: {favby: name}})
+            .then(result => {
+              res.status(200).send('Favourites updated successfully');
+            })
+            .catch(err => {
+              console.error(err);
+              res.status(500).send('Internal server error');
+            });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Internal server error');
+      });
+  });
+  ...
+}
+```
+A felhasználók már tudnak így kedvenceket hozzáadni a fiókjukhoz, ám még nem tudják lekérdezni azokat. mivel minden videóra kíváncsiak vagyunk, amelyet a felhasználó hozzákötött a nevéhez, így elég csak egy .map függvénnyel végigpásztázni a felhasználó nevéhez kapcsolódó videókat (tehát egy videó favby mezőjében benne van a jelenleg bejelentkezett felhasználó neve).
+```js
+module.exports = function (app) {
+  ...
+  app.get('/videos/favorites/:username', function (req, res) {
+    Video.find({ favby: req.params.username })
+      .then(videos => {
+        if (videos.length === 0) {
+          return res.status(404).send('No videos found');
+        }
+        const vids = videos.map(video => video);
+        res.status(200).send(vids);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Error retrieving videos from database');
+      });
+  });
+  ...
+}
+```
+Végül de nem utolsó sorban a felhasználónak biztosítani kell az opciót, hogy törölhessen elemeket a kedvencei közül. Hasonlóan a hozáadáshoz, itt is elég csak biztosítanunk a felhasználó nevét és az eltüntetni kívánt videó ID-ját. Első sorban be kell azonosítanunk a videót, amelyet törölni szeretne a felhasználó, majd ha megtaláltuk, el kell tüntetnünk a felhasználó nevét az adott videó favby tömbjéből (ezt a $pull direktívával tehetjük meg, amelyet az UpdateOne mongoDB függvényben kell meghívni):
+```js
+module.exports = function (app) {
+  ...
+  app.delete('/videos/remove/:vid/:name', (req, res) => {
+    const vid = req.params.vid;
+    const name = req.params.name;
+  
+    Video.findOne({vid: vid, favby: {$in: [name]}})
+      .then(result => {
+        if (!result) {
+          res.status(400).send('User has not added this video to favourites');
+        } else {
+          Video.updateOne({vid: vid}, {$pull: {favby: name}})
+            .then(result => {
+              if (result.nModified === 0) {
+                res.status(400).send('No changes made to favourites');
+                console.log("No changes were made")
+              } else {
+                res.status(200).send('Favourites updated successfully');
+                console.log("Successful writing")
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              res.status(500).send('Internal server error');
+            });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Internal server error');
+      });
+  });
+}
+```
