@@ -37,3 +37,44 @@ app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 });
 ```
+
+## dbConnect.js
+Ez a modul létesíti a kapcsolatot az adatbázissal. Ezt többféleképpen is megtehetem, én a mongoose csomagot használtam. A kapcsolat létrehozásánál meg kell adnunk a szerver címét, valamint hogy melyik kollekcióval kell kapcsolatot létrehozni. Ezután kezelnünk kell a hibát és a sikeres kapcsolatot egyaránt, ami egyszerű konzol kimenet esetünkben
+```js
+const mongoose = require('mongoose');
+// Connect to MongoDB database
+module.exports = function(){
+  mongoose.connect('mongodb://127.0.0.1:27017/DasAuto');
+  const db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error:'));
+  db.once('open', function() {
+    console.log('Connected to MongoDB database.');
+  });
+}
+```
+
+## Sémák (userSchema.js és videoSchema.js)
+Mielőtt beszélhetnénk a kérésekről amelyeket a Backendnek kezelnie kell, fel kell tudnunk állítani azt az adatmodellt (sémát) amelyek használatával ezeket a kéréseket ki tudjuk szolgálni. Két sémát kell realizálni; a felhasználó adatait definiáló userSchema-t, és a videó adatait megadó videoSchema-t:
+```js
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+  name: String,
+  pass: String,
+  gender: String,
+  email: String,
+  favnum: Number
+});
+
+module.exports = userSchema;
+```
+
+```js
+const mongoose = require('mongoose');
+const videoSchema = new mongoose.Schema({
+  link: String,
+  favby: Array,
+  vid: Number
+});
+
+module.exports = videoSchema;
+```
