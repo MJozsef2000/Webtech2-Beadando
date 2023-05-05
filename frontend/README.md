@@ -1,4 +1,4 @@
-# Frontend
+# Frontend dokumentáció
 A projekt Frontend logikai részét a React keretrendszerrel oldottam meg, amely a Typescript-et használja mint nyelv.
 A stílusért a Bootstrap 5.3-as verziója felelős.
 
