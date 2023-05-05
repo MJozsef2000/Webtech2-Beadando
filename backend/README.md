@@ -58,11 +58,11 @@ Mielőtt beszélhetnénk a kérésekről amelyeket a Backendnek kezelnie kell, f
 ```js
 const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
-  name: String,
-  pass: String,
-  gender: String,
-  email: String,
-  favnum: Number
+  name: String, // A felhasználó neve
+  pass: String, // A felhasználó jelszava
+  gender: String, // A felhasználó neme 
+  email: String, // A felhasználó email címe
+  favnum: Number // A felhasználó által választott kedvenc szám
 });
 
 module.exports = userSchema;
@@ -71,10 +71,144 @@ module.exports = userSchema;
 ```js
 const mongoose = require('mongoose');
 const videoSchema = new mongoose.Schema({
-  link: String,
-  favby: Array,
-  vid: Number
+  link: String, // A videó YouTube linkje
+  favby: Array, // A videót mely felhasználók tették a kedvenceik közé (string array)
+  vid: Number // A videó ID-ja
 });
 
 module.exports = videoSchema;
+```
+## userRequests.js
+Ha felállítottuk a használandó sémákat, kezelhetjük az őket használó kéréseket is. Először a felhasználóval kapcsolatos lekérdezéseket vesszük figyelembe. Első lekérdezés amit megvalósítunk, az a felhasználó adatainak lekérdezése felhasználó név alapján. Mivel csak egy nevet kérünk be, elég ha a req.params-ban adjuk át a paramétert a Backend számára. Ha a felhasználó nem létezik, 404-es hibával, ha hiba történt akkor 500-al, ha sikeres a lekérdezés akkor pedig a felhasználó adataival válaszol a szerver.
+```js
+module.exports = function (app) {
+ app.get('/users/:username', (req, res) => {
+    const username = req.params.username;
+    User.findOne({ name: username })
+      .then(user => {
+        if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Server Error');
+      });
+  });
+  ...
+}
+```
+Bár a Frontend nem használja ki ezt a funkciót, implementálásra került az az eset is, ha minden felhasználót le szeretnénk kérdezni. Ezt egy egyszerű /users kéréssel hajthatjuk végre, amely hasonlóan működik a felhasználó specifikus változattal.
+```js
+module.exports = function (app) {
+...
+  app.get('/users', function (req, res) {
+    User.find()
+      .then(users => {
+        if (!users) {
+          return res.status(404).send('User(s) not found');
+        }
+        res.send(users);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Error retrieving users from database');
+      });
+  });
+...
+}
+```
+Ha a felhasználó bejelentkezéséről van szó, két információt kell összevetnünk az adatbázissal: Egy felhasználó nevet és egy jelszót. Ha az adatbázisban meglelhetó a felhsaználó és a az adott jelszó ugyanabban a rekordban, akkor a felhasználó sikeresen autentikálta magát (200-as kód + a felhasználó adatai). Ellenkező esetben 404-es kóddal jelez a Backend a felhasználó sikertelen azonosításáról.
+```js
+module.exports = function (app) {
+  ...
+  app.post('/users/login', function (req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+    User.findOne({ name: username, pass: password})
+      .then(user => {
+        if (!user) {
+          return res.status(404).send('User not found');
+        }
+        res.status(200).send(user);
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Error retrieving user from database');
+      });
+  });
+  ...
+}
+```
+A felhasználó nem csak belépni tud, de létre is hozhat egy felhasználói fiókat. A Frontend signup.tsx fájljában implementált regisztrációs módszer ezt a kérést küldi el a Backend felé, amelyet a következőképpen kezelünk (magyarázat kommentekben):
+```js
+module.exports = function (app) {
+...
+  app.post('/register', (req, res) => {
+    console.log(req.body);
+    //A req.body tartalmazza a Frontendben megadott felhasználói adatokat
+    const username = req.body.username;
+    const password = req.body.password;
+    const gender = req.body.gender;
+    const email = req.body.email;
+    const favnum = req.body.favnum;
+    
+    //Ellenőrizzük, hogy a felhasználó létezik-e már
+    User.findOne({name: username})
+      .then(user => {
+        if (user) {
+          // Ezzel a névvel már rendelkezik felhasználó az adatbázisban
+          res.status(400).send('User with that name already exists');
+        } else {
+          // Nem létezik még ilyen felhasználó, hozzuk létre az adatbázisban
+          const newUser = new User({
+            name: username,
+            pass: password,
+            gender: gender,
+            email: email,
+            favnum: favnum
+          }, {versionKey: false});
+          //A létrehozott felhasználót leíró newUser rekord mentése, promise alapján működik
+          newUser.save()
+            .then(() => {
+              // A felhasználó sikeresen került elmentésre
+              res.status(200).send('User created successfully');
+            })
+            .catch(err => {
+              // HIba történt mentés közben
+              console.error(err);
+              res.status(500).send('Internal server error');
+            });
+        }
+      })
+      .catch(err => {
+        // Hiba történt azonosítás közben
+        console.error(err);
+        res.status(500).send('Internal server error');
+      });
+  });
+  ...
+}
+```
+Ugyancsak kihasználatlan eszköz a felhasználók törlése. Ebben az esetben egy felhasználó név alapján egy adatbázisból való törlést kérhet a Frontend:
+```js
+module.exports = function (app) {
+  ...
+  app.get('/users/remove/:name', (req, res) => {
+    const name = req.params.name;
+    User.findOneAndDelete({ name: name })
+      .then(result => {
+        if (result) {
+          res.status(200).send('User deleted successfully');
+        } else {
+          res.status(400).send('User not found');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send('Internal server error');
+      });
+  });
+}
 ```
