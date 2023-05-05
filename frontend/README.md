@@ -314,4 +314,48 @@ interface Props {
   username: string | null;
 }
 ```
-
+A lekérdezést a Backend videos/favourites/:username úton tudjuk megtenni a Backend felé egy GET kéréssel:
+```js
+ useEffect(() => {
+    fetch(`http://localhost:4000/videos/favorites/${username}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setVideos(data);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [username]);
+```
+Miután elintéztük a videók lekérdezését, meg kell bizonyosodnunk arról, hogy ezek a videók megjelenjenek. Egy videos.map ciklussal be kell járnunk az összes lekérdezett videót, majd minden linkhez egy panelt gyártani, amely tartalmaz egy törlés gombot. Ha a törlés gombra kattintunk, egy belső DELETE kérést aduink át a Backendnek, amely az adott Video ID-val rendelkező videót kitörli a jelenleg bejelentkezett felhasználó bejegyzése alól.
+```js
+{videos.map((video, index) => (
+    <div className="list-wrapper">
+      <div className="list-inner">
+        <li key={video._id}>
+          <a href={`https://www.youtube.com/watch?v=${video.link}`}>
+            https://www.youtube.com/watch?v={video.link}
+          </a>
+          <button type="button" className="btn btn-danger" onClick={() => {
+            const newVideos = [...videos];
+            newVideos.splice(index, 1);
+            setVideos(newVideos);
+             fetch(`http://localhost:4000/videos/remove/${video.vid}/${username}`, {
+              method: 'DELETE'
+            })
+            .then(res => {
+              if (!res.ok) {
+                throw new Error('Network response was not ok');
+              }
+              console.log('Video removed from favorites');
+            })
+            .catch(err => {
+              console.error(err);
+            });
+          }}>Törlés</button>
+        </li>
+      </div>
+    </div>
+  ))}
+```
